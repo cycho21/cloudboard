@@ -3,7 +3,6 @@ package kr.ac.uos.ai.cloudBoard.dao;
 import static kr.ac.uos.ai.cloudBoard.model.bean.NameConfiguration.*;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
