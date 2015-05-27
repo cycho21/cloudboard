@@ -1,6 +1,7 @@
 package test.model.rabbitmq;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -22,14 +23,24 @@ public class RabbitmqClient {
 		factory.setPassword(RabbitmqClient.PASSWORD);
 		factory.setPort(RabbitmqClient.PORT);
 		
-		this.connection = factory.newConnection();
+		try {
+			this.connection = factory.newConnection();
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.channel = connection.createChannel();
 		
 		return this.channel;		
 	}
 
 	public void close() throws IOException{
-		this.channel.close();
+		try {
+			this.channel.close();
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.connection.close();
 	}
 	

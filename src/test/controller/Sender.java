@@ -18,7 +18,6 @@ public class Sender {
 		client = new RabbitmqClient();
 		channel = client.getChannel();
 	}
-	
 	public void createQueue(String clientName) throws IOException{
 		queueName = clientName;
 		channel.queueDeclare(queueName, false, false, false, null);		

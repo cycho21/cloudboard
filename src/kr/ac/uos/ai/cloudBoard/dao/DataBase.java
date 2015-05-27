@@ -55,18 +55,16 @@ public class DataBase {
 	private boolean check;
 	private ViewManager view;
 
+	@SuppressWarnings("resource")
 	public DataBase(ViewManager view) {
 		searchedDB = new ArrayList<String>();
 		subList = new ArrayList<ReceiveRule>();
 		ruler = new Ruler();
 		MongoClient mongoC = null;
 		this.view = view;
-		try {
-			mongoC = new MongoClient();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+		mongoC = new MongoClient();
 
+		@SuppressWarnings("deprecation")
 		DB db = mongoC.getDB("CloudBoardDataBase");
 		boardDataCollection = db.getCollection("CloudBoardData");
 		subscribeCollection = db.getCollection("CloudBoardDataSub");
