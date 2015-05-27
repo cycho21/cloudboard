@@ -1,5 +1,7 @@
 package kr.ac.uos.ai.cloudBoard.dao;
-
+/*
+ * this is git gui test
+ */
 import static kr.ac.uos.ai.cloudBoard.model.bean.NameConfiguration.*;
 
 import java.io.IOException;
