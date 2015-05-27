@@ -1,5 +1,7 @@
 package kr.ac.uos.ai.cloudBoard.astNode;
-
+/*
+ * This is git test
+ */
 public class Assignment extends StatementCode{
 	
 	private String 				left;
