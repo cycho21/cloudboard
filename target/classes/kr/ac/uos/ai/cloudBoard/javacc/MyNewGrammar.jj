@@ -12,13 +12,13 @@ public class MyNewGrammar{  public static void main(String args []) throws Par
         StatementCode code = c.getStatements().get(0);
         System.out.println(((Assignment)code).getLeft());
         System.out.println(((Assignment)code).getRight());
-        }      catch (Exception e)      {
-        e.printStackTrace();
-            }      catch (Error e)      {
-        e.printStackTrace();      }  }}PARSER_END(MyNewGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}
-TOKEN : /* type */
-{
-  < INT : "int" >
+        }
+      catch (Exception e)      {        e.printStackTrace();
+      
+      }      catch (Error e)      {        e.printStackTrace();
+      }  }}PARSER_END(MyNewGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN : /* type */
+{
+  < INT : "int" >
 | < BOOLEAN : "boolean" >
 }
 
@@ -33,8 +33,8 @@ TOKEN : /* constructor */
 | < TRUE: "true" >
 | < FALSE: "false" >
 }
-TOKEN :{     < INTEGER_LITERAL:["1"-"9"] (["0"-"9"])* >
-|    < STRING_LITERAL:
+
+TOKEN :{     < INTEGER_LITERAL:["1"-"9"] (["0"-"9"])* >|    < STRING_LITERAL:
       "\""
       (   (~["\"","\\","\n","\r"])
         | ("\\"
@@ -64,8 +64,8 @@ TOKEN : /* constructor */
          "a"-"z"
       ]
   >
-}
-/* SEPARATORS */
+}
+/* SEPARATORS */
 
 TOKEN :
 {
@@ -114,22 +114,24 @@ TOKEN :
 CodeBlock codeBlock():
 {
   CodeBlock block = new CodeBlock();
-  LinkedList< StatementCode > list = null;}
-{  	list = statements() < END >
-  	 {
+  LinkedList< StatementCode > list = null;
+}{
+  	list = statements() < END >  	 {
   	   block.setStatements(list);
-  	  return block;  	 }
-  	 
+  	  return block;
+  	 }  	 
 }
 
 LinkedList<StatementCode > statements():
 {
-  LinkedList<StatementCode > list = new LinkedList<StatementCode >();
-  StatementCode code = null;}
-{
+  LinkedList<StatementCode> list = new LinkedList<StatementCode >();
+  StatementCode code = null;
+}{
   (
-  	  code = statement() < SEMICOLON >  	  {
-  	    list.add(code);  	  }
+  	  code = statement() < SEMICOLON >
+  	  {  	    list.add(code);
+        System.out.println(list.size());
+  	  }
   	)+
 {
   return list;}
@@ -171,13 +173,16 @@ void whileStatementBlock():
 Assignment assignmentStatement():
 {
   Assignment assign = new Assignment();
-  Token t;
+  Token robotName;
+  Token sensorName;
   ExpressionCode exp;}
 {
-  t = < IDENTIFIER > < ASSIGN > exp = expression()
+  robotName = < IDENTIFIER > < DOT > sensorName = <IDENTIFIER > < ASSIGN > exp = expression()
   {
-    assign.setLeft(t.image);
-    assign.setRight(exp);
+    System.out.println(robotName.toString());
+    System.out.println(sensorName.toString());
+//    assign.setLeft(t.image);
+//    assign.setRight(exp);
     return assign;  }
 }
 
@@ -186,7 +191,7 @@ ExpressionCode expression():{
   ExpressionCode exp = new ExpressionCode();
   Token t = null;}
 {
-  	t = < INTEGER_LITERAL >
+  	t = < IDENTIFIER > 
   {
     exp.setValue(t.image);
     return exp;  } }

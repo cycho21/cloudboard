@@ -39,13 +39,14 @@ public class MyNewGrammar implements MyNewGrammarConstants {
   }
 
   static final public LinkedList<StatementCode > statements() throws ParseException {
-  LinkedList<StatementCode > list = new LinkedList<StatementCode >();
+  LinkedList<StatementCode> list = new LinkedList<StatementCode >();
   StatementCode code = null;
     label_1:
     while (true) {
       code = statement();
       jj_consume_token(SEMICOLON);
             list.add(code);
+        System.out.println(list.size());
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IF:
       case WHILE:
@@ -120,13 +121,18 @@ public class MyNewGrammar implements MyNewGrammarConstants {
 
   static final public Assignment assignmentStatement() throws ParseException {
   Assignment assign = new Assignment();
-  Token t;
+  Token robotName;
+  Token sensorName;
   ExpressionCode exp;
-    t = jj_consume_token(IDENTIFIER);
+    robotName = jj_consume_token(IDENTIFIER);
+    jj_consume_token(DOT);
+    sensorName = jj_consume_token(IDENTIFIER);
     jj_consume_token(ASSIGN);
     exp = expression();
-    assign.setLeft(t.image);
-    assign.setRight(exp);
+    System.out.println(robotName.toString());
+    System.out.println(sensorName.toString());
+//    assign.setLeft(t.image);
+//    assign.setRight(exp);
     {if (true) return assign;}
     throw new Error("Missing return statement in function");
   }
@@ -134,7 +140,7 @@ public class MyNewGrammar implements MyNewGrammarConstants {
   static final public ExpressionCode expression() throws ParseException {
   ExpressionCode exp = new ExpressionCode();
   Token t = null;
-    t = jj_consume_token(INTEGER_LITERAL);
+    t = jj_consume_token(IDENTIFIER);
     exp.setValue(t.image);
     {if (true) return exp;}
     throw new Error("Missing return statement in function");

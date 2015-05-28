@@ -1,24 +1,11 @@
 package kr.ac.uos.ai.cloudBoard.astNode;
+
+import lombok.Data;
+
 /*
  * This is git test
  */
-public class Assignment extends StatementCode{
-	
+public @Data class Assignment extends StatementCode{
 	private String 				left;
 	private ExpressionCode		right;
-	
-	public String getLeft() {
-		return left;
-	}
-	public void setLeft(String left) {
-		this.left = left;
-	}
-	public ExpressionCode getRight() {
-		return right;
-	}
-	public void setRight(ExpressionCode right) {
-		this.right = right;
-	}
-	
-	
 }
