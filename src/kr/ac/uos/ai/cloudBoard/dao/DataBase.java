@@ -1,6 +1,6 @@
 package kr.ac.uos.ai.cloudBoard.dao;
 /*
- * this is git gui test
+ * 진만아 나는 보쌈이 먹고 싶어 
  */
 import static kr.ac.uos.ai.cloudBoard.model.bean.NameConfiguration.*;
 
