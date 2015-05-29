@@ -1,6 +1,10 @@
 /**
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
- */options{  static = true;}PARSER_BEGIN(DynamicComp)package kr.ac.uos.ai.cloudBoard.javacc;import kr.ac.uos.ai.cloudBoard.astNode.*;import kr.ac.uos.ai.cloudBoard.synchronize.*;import java.util.*;public class DynamicComp{  public void makeParseAndCondition(String requestString)  {    try    {	  CodeBlock c = DynamicComp.codeBlock();      Condition condition = new Condition();      System.out.println(c);      StatementCode code = c.getStatements().get(0);      System.out.println(((Assignment) code).getLeft());      System.out.println(((Assignment) code).getRight());    }    catch (Exception e)    {      e.printStackTrace();    }    catch (Error e)    {      e.printStackTrace();    }  }
+ */options{  static = false;}PARSER_BEGIN(DynamicComp)package kr.ac.uos.ai.cloudBoard.javacc;import kr.ac.uos.ai.cloudBoard.astNode.*;import kr.ac.uos.ai.cloudBoard.synchronize.*;import java.util.*;public class DynamicComp{
+  
+  public void init()  {  }
+    public void makeParseAndCondition(String requestString)  {    try    {//	  CodeBlock c = DynamicComp.codeBlock();//      Condition condition = new Condition();//      System.out.println(c);//      StatementCode code = c.getStatements().get(0);//      System.out.println(((Assignment) code).getLeft());//      System.out.println(((Assignment) code).getRight());    }    catch (Exception e)    {      e.printStackTrace();    }    catch (Error e)    {      e.printStackTrace();    }  }
+  
   public LinkedList getStatements() throws ParseException
   {	return this.codeBlock().getStatements();
   }
@@ -11,14 +15,31 @@
   }
     }PARSER_END(DynamicComp)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN : /* type */{  < INT : "int" >| < BOOLEAN : "boolean" >}TOKEN : /* constructor */{  < BREAK : "break" >| < CONTINUE : "continue" >| < ELSE : "else" >| < IF : "if" >| < RETURN : "return" >| < WHILE : "while" >| < TRUE : "true" >| < FALSE : "false" >}TOKEN :{  < INTEGER_LITERAL : [ "1"-"9" ] ([ "0"-"9" ])* >| < STRING_LITERAL :    "\""    (      (~[ "\"", "\\", "\n", "\r" ])    |      (        "\\"        (          [ "n", "t", "b", "r", "f", "\\", "'", "\"" ]        | [ "0"-"7" ] ([ "0"-"7" ])?        | [ "0"-"3" ] [ "0"-"7" ] [ "0"-"7" ]        )      )    )*    "\""     >| < IDENTIFIER : < LETTER > (< PART_LETTER >)* >| < #LETTER :     [ // all chars for which Character.isIdentifierStart is true
     "A"-"Z",     "_",     "a"-"z"     ]     >|   < #PART_LETTER :     [ // all chars for which Character.isIdentifierPart is true
-    "0"-"9",     "A"-"Z",     "_",     "a"-"z"     ]     >}/* SEPARATORS */TOKEN :{  < LPAREN : "(" >| < RPAREN : ")" >| < LBRACE : "{" >| < RBRACE : "}" >| < LBRACKET : "[" >| < RBRACKET : "]" >| < SEMICOLON : ";" >| < COMMA : "," >| < DOT : "." >| < AT : "@" >}/* OPERATORS */TOKEN :{  < END : "$" >| < ASSIGN : "=" >| < LT : "<" >| < BANG : "!" >| < HOOK : "?" >| < COLON : ":" >| < EQ : "==" >| < LE : "<=" >| < GE : ">=" >| < NE : "!=" >| < SC_OR : "||" >| < SC_AND : "&&" >| < INCR : "++" >| < DECR : "--" >| < PLUS : "+" >| < MINUS : "-" >| < STAR : "*" >| < SLASH : "/" >| < REM : "%" >| < PLUSASSIGN : "+=" >| < MINUSASSIGN : "-=" >| < STARASSIGN : "*=" >| < SLASHASSIGN : "/=" >}CodeBlock codeBlock() :{  CodeBlock block = new CodeBlock();  LinkedList < StatementCode > list = null;}{  list = statements() < END >  {    block.setStatements(list);    return block;  }}LinkedList < StatementCode > statements() :{  LinkedList < StatementCode > list = new LinkedList < StatementCode > ();  StatementCode code = null;}{  (    code = statement() < SEMICOLON >    {      list.add(code);      System.out.println(list.size());    }  )+  {    return list;  }}StatementCode statement() :{  StatementCode code = null;}{  whileStatement()| ifStatement()| code = assignmentStatement()  {    return code;  }}void ifStatement() :{}{  < IF > < IDENTIFIER >}void whileStatement() :{}{  whileStatementCondition() whileStatementBlock()}void whileStatementCondition() :{}{  < WHILE > < LPAREN > expression() < RPAREN >}void whileStatementBlock() :{
-}{  < LBRACE > statements() returnStatement() < RBRACE > | statement() returnStatement()}
+    "0"-"9",     "A"-"Z",     "_",     "a"-"z"     ]     >}/* SEPARATORS */TOKEN :{  < LPAREN : "(" >| < RPAREN : ")" >| < LBRACE : "{" >| < RBRACE : "}" >| < LBRACKET : "[" >| < RBRACKET : "]" >| < SEMICOLON : ";" >| < COMMA : "," >| < DOT : "." >| < AT : "@" >}/* OPERATORS */TOKEN :{  < END : "$" >| < ASSIGN : "=" >| < LT : "<" >| < BANG : "!" >| < HOOK : "?" >| < COLON : ":" >| < EQ : "==" >| < LE : "<=" >| < GE : ">=" >| < NE : "!=" >| < SC_OR : "||" >| < SC_AND : "&&" >| < INCR : "++" >| < DECR : "--" >| < PLUS : "+" >| < MINUS : "-" >| < STAR : "*" >| < SLASH : "/" >| < REM : "%" >| < PLUSASSIGN : "+=" >| < MINUSASSIGN : "-=" >| < STARASSIGN : "*=" >| < SLASHASSIGN : "/=" >}CodeBlock codeBlock() :{  CodeBlock block = new CodeBlock();
+  LinkedList < StatementCode > list = null;}{  list = statements() < END >  {    block.setStatements(list);    return block;  }}LinkedList < StatementCode > statements() :{  LinkedList < StatementCode > list = new LinkedList < StatementCode > ();  StatementCode code = null;}{  (    code = statement() < SEMICOLON >    {      list.add(code);    }  )+  {    return list;  }}StatementCode statement() :{  StatementCode code = null;}{  whileStatement()| ifStatement()| code = assignmentStatement()  {    return code;  }}void ifStatement() :{}{  < IF > < IDENTIFIER >}void whileStatement() :{
+ExpressionCode 	      whileCondition;
+Condition condition = new Condition();
+condition = null;
+}{  whileCondition = whileStatementCondition() condition = whileStatementBlock()
+  {
+    System.out.println(whileCondition);  }}ExpressionCode whileStatementCondition() :{
+ExpressionCode whileCondition;
+}{  < WHILE > < LPAREN > whileCondition = expression() < RPAREN >
+  {
+    return whileCondition;  }}// 수정요망Condition whileStatementBlock() :{
+Condition condition = new Condition();
+condition = null;
+}{  < LBRACE > statements() returnStatement() < RBRACE >
+  {
+    condition.setStatements(statements());
+    condition.setWhenReturn(returnStatement());
+    return condition;  } }
 
-void returnStatement() :
+String returnStatement() :
 {
-  Token whenReturn;}
+Token whenReturn;}
 {
   < RETURN > whenReturn = < IDENTIFIER > < SEMICOLON >
   {
-      }
+    return whenReturn.toString();  }
 }Assignment assignmentStatement() :{  Assignment assign = new Assignment();  Token robotName;  Token sensorName;  ExpressionCode exp;}{  robotName = < IDENTIFIER > < DOT > sensorName = < IDENTIFIER > < ASSIGN > exp = expression()  {    System.out.println(robotName.toString());    System.out.println(sensorName.toString());    return assign;  }}ExpressionCode expression() :{  ExpressionCode exp = new ExpressionCode();  Token t = null;}{  t = < IDENTIFIER >  {    exp.setValue(t.image);    return exp;  }}

@@ -12,5 +12,4 @@ public @Data class WhileStatement extends StatementCode {
 	public WhileStatement() {
 		codeBlock = new LinkedList<StatementCode>();
 	}
-	
 }
