@@ -5,3 +5,6 @@
 /MyNewGrammarTokenManager.java
 /MyNewGrammarConstants.java
 /TokenMgrError.java
+/DynamicCompConstants.java
+/DynamicCompTokenManager.java
+/DynamicComp.java
