@@ -1,7 +1,4 @@
 package kr.ac.uos.ai.cloudBoard.dao;
-/*
- * 진만아 나는 보쌈이 먹고 싶어 
- */
 import static kr.ac.uos.ai.cloudBoard.model.bean.NameConfiguration.*;
 
 import java.io.IOException;
@@ -12,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import kr.ac.uos.ai.cloudBoard.NearBy;
+import kr.ac.uos.ai.cloudBoard.javacc.ParseException;
 import kr.ac.uos.ai.cloudBoard.model.bean.ClientMonitorData;
 import kr.ac.uos.ai.cloudBoard.model.bean.CloudBoardMessage;
 import kr.ac.uos.ai.cloudBoard.model.bean.Fact;
@@ -19,7 +17,9 @@ import kr.ac.uos.ai.cloudBoard.model.bean.NotificationRule;
 import kr.ac.uos.ai.cloudBoard.model.bean.QueryRule;
 import kr.ac.uos.ai.cloudBoard.model.bean.ReceiveRule;
 import kr.ac.uos.ai.cloudBoard.model.bean.Rule;
+import kr.ac.uos.ai.cloudBoard.model.bean.StatementObj;
 import kr.ac.uos.ai.cloudBoard.model.bean.SubscriptionRule;
+import kr.ac.uos.ai.cloudBoard.synchronize.Sinker;
 import kr.ac.uos.ai.cloudBoard.factory.BoardDataFactory;
 
 import org.json.simple.JSONArray;
@@ -313,37 +313,84 @@ public class DataBase {
 	public Fact[] queryBoardData(Fact data) {
 		return null;
 	}
+	
+	private void queryAndThread(StatementObj obj){
+		DBCursor cursor = boardDataCollection.find(generateThreadQuery(obj.getRobotName(), obj.getSensorName(), obj.getRhs(), obj.getOperator()));
+		while (cursor.hasNext()) {
+			searchedDB.add(cursor.next().toString());
+		}
+	}
+	
+	private BasicDBObject generateThreadQuery(String robotName, String sensorName, String rhs, String oper){
+		BasicDBObject dbo = new BasicDBObject();
+
+		switch(oper){
+		case ">" : 
+			dbo.put("author", robotName);
+			dbo.put("arguments."+ sensorName, new BasicDBObject("#gt", rhs));
+			break;
+		case "<" :
+			dbo.put("author", robotName);
+			dbo.put("arguments."+ sensorName, new BasicDBObject("#lt", rhs));
+			break;
+		}
+		System.out.println(dbo);
+		return dbo;
+	}
 
 	public void subBoardData(SubscriptionRule subscriptionRule, Fact data,
 			NotificationRule notificationRule) {
 		check = false;
 
-		if (subCheck(subscriptionRule, data)) {
-			for (String s : data.getArguments().keySet()) {
-				view.printLogMessage("\n" + subscriptionRule.getSender()
-						+ " subscribes " + subscriptionRule.getAuthor()
-						+ " \'s " + subscriptionRule.getOperation() + " data "
-						+ "(" + subscriptionRule.getOperand() + " (" + s
-						+ " : " + data.getArguments().get(s) + "))"
-						+ "  (dataName : " + data.getName() + ")");
-			}
-
-			DBObject dbo = subConvert(subscriptionRule, data, notificationRule);
-			subscribeCollection.insert(dbo);
-
-			ReceiveRule receiveRule = new ReceiveRule();
-			receiveRule.setDataName(data.getName());
-			receiveRule.setRequester(subscriptionRule.getSender());
-			receiveRule.setAuthor(subscriptionRule.getAuthor());
-			receiveRule.setOperand(subscriptionRule.getOperand());
-			receiveRule.setOperation(subscriptionRule.getOperation());
-			receiveRule.setArguments(data.getArguments());
-			receiveRule.setNotificationRule(notificationRule);
-			subList.add(receiveRule);
+		if (data.getName().toUpperCase().equals("CONDITION")){
+			Sinker sinker = new Sinker();
+			Set<String> key = data.getArguments().keySet();
 			
-			subscribeDo();
+			String conditionName;
+			String code = null;
+			StatementObj obj;
+			
+			for(String s : key){
+				conditionName = s;
+				code = data.getArguments().get(s).toString();
+			}
+			
+			try {
+				obj = sinker.ifStatement(code);
+				queryAndThread(obj);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			
 		} else {
+			
+			if (subCheck(subscriptionRule, data)) {
+				for (String s : data.getArguments().keySet()) {
+					view.printLogMessage("\n" + subscriptionRule.getSender()
+							+ " subscribes " + subscriptionRule.getAuthor()
+							+ " \'s " + subscriptionRule.getOperation() + " data "
+							+ "(" + subscriptionRule.getOperand() + " (" + s
+							+ " : " + data.getArguments().get(s) + "))"
+							+ "  (dataName : " + data.getName() + ")");
+				}
+				
+				DBObject dbo = subConvert(subscriptionRule, data, notificationRule);
+				subscribeCollection.insert(dbo);
+				
+				ReceiveRule receiveRule = new ReceiveRule();
+				receiveRule.setDataName(data.getName());
+				receiveRule.setRequester(subscriptionRule.getSender());
+				receiveRule.setAuthor(subscriptionRule.getAuthor());
+				receiveRule.setOperand(subscriptionRule.getOperand());
+				receiveRule.setOperation(subscriptionRule.getOperation());
+				receiveRule.setArguments(data.getArguments());
+				receiveRule.setNotificationRule(notificationRule);
+				subList.add(receiveRule);
+				subscribeDo();
+			} else {
+			}
 		}
+		
 	}
 
 	private boolean subCheck(SubscriptionRule subscriptionRule, Fact data) {
@@ -376,11 +423,9 @@ public class DataBase {
 		return check;
 	}
 
-	private void subQuery(String key, String value, String operand,
-			String dataName, String author, String messageType) {
+	private void subQuery(String key, String value, String operand, String dataName, String author, String messageType) {
 		DBCursor cursor = boardDataCollection.find(generateQuery(key, value,operand, dataName, author, messageType));
 		while (cursor.hasNext()) {
-//			makeSubData(cursor.next().toString());
 			searchedDB.add(cursor.next().toString());
 		}
 	}
@@ -400,9 +445,7 @@ public class DataBase {
 	}
 
 	private BasicDBObject generateQuery(String key, String value,
-			String operand, String dataName, String author, String messageType) { // #
-																					// 기능
-																					// 추가
+			String operand, String dataName, String author, String messageType) {
 		BasicDBObject dbo = new BasicDBObject();
 	
 		if (key.contains("#")) {

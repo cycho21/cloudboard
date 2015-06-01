@@ -20,10 +20,29 @@ Mobile to Cloudboard
 	]
 }
 
+Subscribe Condition
+
+{
+	"sender" : "smart_robot",
+	"messageType" : "SUBSCRIBE",
+	"data":[
+		{
+			"author" : "smtart_robot",
+			"name" : "CONDITION",
+			"eTime" : "Tue Mar 03 21:41:16 GMT+09:00 2015",
+			"pTime" : "Tue Mar 03 21:41:16 GMT+09:00 2015",
+			"operation" : "UPDATE"
+			"arguments" : [
+				{ "wallEncounterCondition" : wallEncountered },
+			]
+		}
+	]
+}
+
+
 Cloud to Mobile
 
 {
-	"sender" : "cloudboard",
 	"messageType" : "NOTIFY",
 	"data":[
 		{
