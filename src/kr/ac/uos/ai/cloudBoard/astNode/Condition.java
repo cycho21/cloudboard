@@ -8,6 +8,5 @@ public @Data class Condition {
 
 	@SuppressWarnings("rawtypes")
 	private LinkedList statements;
-	private String whenReturn;
-	
+	private String whatReturn;
 }

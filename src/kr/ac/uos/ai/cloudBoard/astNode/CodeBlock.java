@@ -11,5 +11,5 @@ public @Data class CodeBlock {
 	public CodeBlock() {
 		statements = new LinkedList<StatementCode>();
 	}
-	
+
 }

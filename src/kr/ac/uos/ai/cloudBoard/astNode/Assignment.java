@@ -8,4 +8,7 @@ import lombok.Data;
 public @Data class Assignment extends StatementCode{
 	private String 				left;
 	private ExpressionCode		right;
+	private String				robotName;
+	private String				sensorName;
+	private String				oper;
 }
