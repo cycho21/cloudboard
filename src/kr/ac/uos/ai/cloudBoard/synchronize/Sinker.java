@@ -14,7 +14,7 @@ public class Sinker {
 	private WhileStatement  whileStatement;
 	private IfStatement 	ifStatement;
 	private Assignment 		assignment;
-	String str = "if (gildong.leftSensor < 10) {return wallEncoutered;};#";
+	String str = "if(gildong.leftSensor<10){returnwallEncoutered;};#";
 
 	public Sinker() {
 	}
@@ -34,12 +34,11 @@ public class Sinker {
 		DynamicComp dynamic = new DynamicComp(reader);
 		return dynamic;
 	}
-
+	@Test
 	public StatementObj ifStatement(String string) throws ParseException {
 		DynamicComp dynamic = makeReaderAndComp(string);
 		IfStatement a = (IfStatement) dynamic.getCodeBlock().getStatements().get(0);
 		StatementObj statementObj = new StatementObj();
-		
 		statementObj.setOperator(a.getExp().getOperator());
 		statementObj.setRobotName(a.getExp().getRobotName());
 		statementObj.setSensorName(a.getExp().getSensorName());
@@ -47,15 +46,7 @@ public class Sinker {
 		statementObj.setRhs(a.getExp().getRhs());
 		
 		return statementObj;
+	
 	}
-
-//	public void assignStatment(String string) throws ParseException {
-//		DynamicComp dynamic = makeReaderAndComp(string);
-//		Assignment b = (Assignment) dynamic.getCodeBlock().getStatements().get(0);
-//
-//		System.out.println(b.getRobotName());
-//		System.out.println(b.getSensorName());
-//		System.out.println(b.getRight().getValue());
-//	}
 
 }

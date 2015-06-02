@@ -158,15 +158,13 @@ public class BoardDataFactory {
 
 		dataObject.put(DataAuthor, data.getAuthor());
 
-//		JSONArray dataArr = new JSONArray();
 		JSONArray argumentArray = new JSONArray();
 		for (String name : data.getArguments().keySet()) {
 			JSONObject argument = new JSONObject();
 			argument.put(name, data.getValue(name));
 			argumentArray.add(argument);
 		}
-//		dataArr.add(new BasicDBObject("name", data.getName()).append("argumetns", argumentArray).append("operation", data.getMessageType()).append("author", data.getAuthor()));
-//		dataObject.put("data", dataArr);
+		
 		dataObject.put(ArgumentList, argumentArray);
 		return dataObject;
 	}

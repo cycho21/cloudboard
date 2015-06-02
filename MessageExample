@@ -14,12 +14,13 @@ Mobile to Cloudboard
 			"arguments" : [
 				{ "wallEncounterCondition" : "gildong.sensor = gs;
 							if(gs < 10) {
-							return wallEncountered;};" } /* return에 적은걸 다시 보냄여
+							return wallEncountered;};#" }
 			]
 		}
 	]
 }
 
+subscribe duli condition update #gt wallEncounter wallEncountered
 Subscribe Condition
 
 {
