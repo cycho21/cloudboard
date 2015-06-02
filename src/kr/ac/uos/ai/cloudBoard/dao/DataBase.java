@@ -21,7 +21,7 @@ import kr.ac.uos.ai.cloudBoard.model.bean.Rule;
 import kr.ac.uos.ai.cloudBoard.model.bean.StatementObj;
 import kr.ac.uos.ai.cloudBoard.model.bean.SubscriptionRule;
 import kr.ac.uos.ai.cloudBoard.synchronize.Sinker;
-import kr.ac.uos.ai.cloudBoard.synchronize.ThreadRunning;
+import kr.ac.uos.ai.cloudBoard.synchronize.EventObserver;
 import kr.ac.uos.ai.cloudBoard.factory.BoardDataFactory;
 import kr.ac.uos.ai.cloudBoard.factory.JsonParser;
 
@@ -82,7 +82,24 @@ public class DataBase {
 	public void dumpBoardData() {
 		DBCursor cursor = boardDataCollection.find();
 		while (cursor.hasNext()) {
-			view.printMongoDBMessage(cursor.next().toString());
+			System.out.println("11111111111111111");
+			String n= null;
+			String v= null;
+			JSONObject object = (JSONObject) JSONValue.parse(cursor.next().toString());
+			String dataName = (String) object.get("name");
+			String author = (String) object.get("author");
+			JSONArray argumentsArray = (JSONArray) object.get(ArgumentList);
+			for (Object o : argumentsArray){
+				JSONObject valueEntry = (JSONObject) o;
+				String name = (String) valueEntry.keySet().iterator().next();
+				String value = (String) valueEntry.get(name);
+				n = name;
+				v = value;
+			}
+			view.printMongoDBMessage("\n" + "Name      : " + dataName);
+			view.printMongoDBMessage("Author    : " + author);
+			view.printMongoDBMessage("Key         : " + n);
+			view.printMongoDBMessage("value       : " + v);
 		}
 	}
 
@@ -372,12 +389,12 @@ public class DataBase {
 	public BasicDBObject findQuery(String conditionName, String author) {
 		BasicDBObject dbo = new BasicDBObject();
 		dbo.put("author", author);
-		dbo.put("name", "condition");
+		dbo.put("name", "CONDITION");
+		System.out.println(dbo);
 		return dbo;
 	}
 
 	public String parseCode(String string) {
-
 		JSONObject object = (JSONObject) JSONValue.parse(string);
 		JSONArray argumentsArray = (JSONArray) object.get(ArgumentList);
 		String code = null;
@@ -395,31 +412,38 @@ public class DataBase {
 		check = false;
 
 		if (data.getName().toUpperCase().equals("CONDITION")) {
+			
 			Sinker sinker = new Sinker();
-
 			Set<String> key = data.getArguments().keySet();
 			
 			String conditionName = null;
 			StatementObj obj = null;
-System.out.println("1111111111111");
-			ThreadRunning tRun = new ThreadRunning();
-			tRun.setObj(obj);
-			for (String s : key) {
-				conditionName = s;
-				tRun.setConditionName(data.getArguments().get(s));
-			}
-
-			DBCursor dbcursor = boardDataCollection.find(findQuery(
-					conditionName, data.getAuthor()));
+			
+			DBCursor dbcursor = boardDataCollection.find(findQuery(conditionName, data.getAuthor()));
 
 			String requestString = dbcursor.next().toString();
 
 			try {
 				obj = sinker.ifStatement(parseCode(requestString));
+				obj.setSender(subscriptionRule.getSender());
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 
+			EventObserver tRun = new EventObserver();
+			for (String s : key) {
+				conditionName = s;
+				tRun.setConditionName(data.getArguments().get(s));
+			}
+			
+			view.printLogMessage("\n" + data.getAuthor() + " SUBCRIBE CONDITION");
+			view.printLogMessage("Name      : " + data.getArguments().get(conditionName));
+			view.printLogMessage("Key         : " + obj.getRobotName() + "." + obj.getSensorName());
+			view.printLogMessage("Value       : " + "if ( " + obj.getRobotName() + "." + obj.getSensorName() + " " +obj.getOperator() + " " + obj.getRhs()+ " )");
+			
+			tRun.setObj(obj);
+			tRun.setView(this.view);
+			tRun.setTarget(data.getAuthor());
 			Thread tRunThread = new Thread(tRun);
 			tRunThread.start();
 

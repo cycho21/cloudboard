@@ -2,12 +2,16 @@ package kr.ac.uos.ai.cloudBoard.synchronize;
 
 import static kr.ac.uos.ai.cloudBoard.model.bean.NameConfiguration.ArgumentList;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
+import test.controller.Sender;
+import test.view.ViewManager;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -18,7 +22,7 @@ import com.mongodb.MongoClient;
 import kr.ac.uos.ai.cloudBoard.model.bean.StatementObj;
 import lombok.Data;
 
-public @Data class ThreadRunning implements Runnable {
+public @Data class EventObserver implements Runnable {
 
 	private StatementObj obj;
 	private DBCollection boardDataCollection;
@@ -26,8 +30,10 @@ public @Data class ThreadRunning implements Runnable {
 	private DBCollection connectionCollection;
 	private boolean go = true;
 	private String conditionName;
+	private ViewManager view;
+	private String author;
 	
-	public ThreadRunning() {
+	public EventObserver() {
 		MongoClient mongoC = null;
 		mongoC = new MongoClient();
 		@SuppressWarnings("deprecation")
@@ -54,9 +60,8 @@ public @Data class ThreadRunning implements Runnable {
 		BasicDBObject dbo = new BasicDBObject();
 		dbo.put("author", obj.getRobotName());
 		dbo.put("name", obj.getSensorName());
-		System.out.println(dbo);
 		DBCursor cursor = boardDataCollection.find(dbo);
-
+		System.out.println(dbo);
 		return cursor.next().toString();
 	}
 	
@@ -96,16 +101,40 @@ public @Data class ThreadRunning implements Runnable {
 		dbo.put("sender", "cloudboard");
 		dbo.put("messageType", "NOTIFY");
 		
-		hm2.put(conditionName, obj.getWhatReturn());
+		hm2.put(conditionName, conditionName);
 		
 		hm.put("arguments", hm2);
 		hm.put("name", "CONDITION");
 		dbo.put("data", hm);
-		System.out.println("?!?!" + dbo);
+		
+		view.printLogMessage("\n" + author + " CONDITION SATISFIED");
+		view.printLogMessage("Name      : " + conditionName);
+		view.printLogMessage("Cloudboard NOTIFY CONDITION DONE");
+		sendMessage(dbo.toString(), obj.getSender());
 	}
 
 	public void setConditionName(String string) {
 		this.conditionName = string;
+	}
+	
+	private void sendMessage(String string, String author) {
+
+		Sender sender;
+		try {
+			sender = new Sender();
+			sender.createQueue(author);
+			sender.sendMessage(string);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setView(ViewManager view) {
+		this.view = view;
+	}
+
+	public void setTarget(String author) {
+		this.author = author;
 	}
 	
 }

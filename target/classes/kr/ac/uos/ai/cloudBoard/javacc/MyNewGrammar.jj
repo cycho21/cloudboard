@@ -164,7 +164,7 @@ CodeBlock codeBlock() :
   LinkedList < StatementCode > list = null;
 }
 {
-  list = statements() <END>
+  list = statements()
   {
     block.setStatements(list);
     return block;
@@ -178,7 +178,7 @@ LinkedList < StatementCode > statements() :
 }
 {
   (
-    code = statement() < SEMICOLON >
+    code = statement()
     {
       list.add(code);
     }
@@ -214,13 +214,11 @@ IfStatement ifStatement() :
 {
   IfStatement ifStatement = new IfStatement();
   ExpressionCode ifExpression;
-  Condition condition;
 }
 {
-	ifExpression = ifStatementCondition() condition = ifStatementBlock()  
+	ifExpression = ifStatementCondition()
   {
   	ifStatement.setExp(ifExpression);
-  	ifStatement.setCondition(condition);
     return ifStatement;
   }
 }
@@ -229,13 +227,11 @@ WhileStatement whileStatement() :
 {
   WhileStatement whileStatement = new WhileStatement();
   ExpressionCode whileExpression;
-  Condition condition;
 }
 {
-   whileExpression = whileStatementCondition() condition = whileStatementBlock()
+   whileExpression = whileStatementCondition()
   {
   	whileStatement.setExp(whileExpression);
-  	whileStatement.setCondition(condition);
     return whileStatement;
   }
 }
@@ -249,7 +245,7 @@ ExpressionCode ifStatementCondition() :
   Token operator;
 }
 {
-  	< IF > < LPAREN > robotName = < IDENTIFIER > < DOT > sensorName = < IDENTIFIER > operator = <OPERATORS> t = <INTEGER_LITERAL> < RPAREN >
+  	< IF > < LPAREN > robotName = < IDENTIFIER > < DOT > sensorName = < IDENTIFIER > operator = <OPERATORS> t = <INTEGER_LITERAL> < RPAREN > <LBRACE ><RBRACE >
   {
   	exp.setRobotName(robotName.image);
   	exp.setSensorName(sensorName.image);
@@ -269,7 +265,7 @@ ExpressionCode whileStatementCondition() :
 }
 
 {
-  < WHILE > < LPAREN > robotName = < IDENTIFIER > < DOT > sensorName = < IDENTIFIER > operator = <OPERATORS> t = <INTEGER_LITERAL> < RPAREN >
+  < WHILE > < LPAREN > robotName = < IDENTIFIER > < DOT > sensorName = < IDENTIFIER > operator = <OPERATORS> t = <INTEGER_LITERAL> < RPAREN ><LBRACE ><RBRACE >
   {
   	exp.setRobotName(robotName.image);
   	exp.setSensorName(sensorName.image);

@@ -8,5 +8,5 @@ public @Data class StatementObj {
 	private String sensorName;
 	private String operator;
 	private String rhs;
-	private String whatReturn;
+	private String sender;
 }

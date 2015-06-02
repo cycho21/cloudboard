@@ -12,15 +12,13 @@ Mobile to Cloudboard
 			"pTime" : "Tue Mar 03 21:41:16 GMT+09:00 2015",
 			"operation" : "ASSERT"
 			"arguments" : [
-				{ "wallEncounterCondition" : "gildong.sensor = gs;
-							if(gs < 10) {
-							return wallEncountered;};#" }
+				{ "wallEncounterCondition" : "gildong.sensor = gs;if(duli.sensor<10){returnwallEncountered;};#" }
 			]
 		}
 	]
 }
 
-subscribe duli condition update #gt wallEncounter wallEncountered
+subscribe duli condition update #gt wall wall
 Subscribe Condition
 
 {
